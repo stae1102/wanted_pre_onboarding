@@ -12,13 +12,14 @@ datasource db {
 
 model Job {
   job_id       Int    @id @default(autoincrement())
+  position     String @db.VarChar(15)
   content      String @db.Text
   compensation Int    @default(500000)
 
   company_id Int
 
-  JobPositions JobPosition[]
-  JobUsers     JobUser[]
+  JobUsers JobUser[]
+  JobTechs JobTech[]
 
   Company Company? @relation(fields: [company_id], references: [company_id], onDelete: SetNull)
 }
@@ -27,10 +28,9 @@ model Company {
   company_id Int    @id @default(autoincrement())
   name       String @db.VarChar(20)
   nation     String @default("한국") @db.VarChar(12)
-  region     String @db.VarChar(20)
+  region     String @default("서울") @db.VarChar(20)
 
-  Jobs             Job[]
-  CompanyPositions CompanyPosition[]
+  Jobs Job[]
 }
 
 model JobUser {
@@ -39,8 +39,8 @@ model JobUser {
   job_id  Int
   user_id Int
 
-  Job  Job  @relation(fields: [job_id], references: [job_id], onDelete: SetNull)
-  User User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  Job  Job?  @relation(fields: [job_id], references: [job_id], onDelete: SetNull)
+  User User? @relation(fields: [user_id], references: [user_id], onDelete: SetNull)
 }
 
 model User {
@@ -50,39 +50,19 @@ model User {
   JobUsers JobUser[]
 }
 
-model Position {
-  position_id Int    @id @default(autoincrement())
-  position    String @db.VarChar(15)
-
-  Techs            Tech[]
-  JobPositions     JobPosition[]
-  CompanyPositions CompanyPosition[]
-}
-
 model Tech {
-  tech_id     Int    @id @default(autoincrement())
-  name        String @db.VarChar(12)
-  position_id Int
+  tech_id Int    @id @default(autoincrement())
+  name    String @db.VarChar(12)
 
-  Position Position @relation(fields: [position_id], references: [position_id])
+  JobTechs JobTech[]
 }
 
-model JobPosition {
-  job_id      Int
-  position_id Int
+model JobTech {
+  job_id  Int
+  tech_id Int
 
-  Job      Job      @relation(fields: [job_id], references: [job_id])
-  Position Position @relation(fields: [position_id], references: [position_id])
+  Job  Job  @relation(fields: [job_id], references: [job_id])
+  Tech Tech @relation(fields: [tech_id], references: [tech_id])
 
-  @@id([job_id, position_id])
-}
-
-model CompanyPosition {
-  company_id  Int
-  position_id Int
-
-  Company  Company  @relation(fields: [company_id], references: [company_id], onDelete: Cascade)
-  Position Position @relation(fields: [position_id], references: [position_id])
-
-  @@id([company_id, position_id])
+  @@id([job_id, tech_id])
 }
