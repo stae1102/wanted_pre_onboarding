@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -15,13 +16,13 @@ model Job {
   position     String @db.VarChar(15)
   content      String @db.Text
   compensation Int    @default(500000)
+  tech         String @db.VarChar(12)
 
   company_id Int
 
   JobUsers JobUser[]
-  JobTechs JobTech[]
 
-  Company Company? @relation(fields: [company_id], references: [company_id], onDelete: SetNull)
+  Company Company @relation(fields: [company_id], references: [company_id], onDelete: SetNull)
 }
 
 model Company {
@@ -48,21 +49,4 @@ model User {
   name    String @db.VarChar(12)
 
   JobUsers JobUser[]
-}
-
-model Tech {
-  tech_id Int    @id @default(autoincrement())
-  name    String @db.VarChar(12)
-
-  JobTechs JobTech[]
-}
-
-model JobTech {
-  job_id  Int
-  tech_id Int
-
-  Job  Job  @relation(fields: [job_id], references: [job_id])
-  Tech Tech @relation(fields: [tech_id], references: [tech_id])
-
-  @@id([job_id, tech_id])
 }
