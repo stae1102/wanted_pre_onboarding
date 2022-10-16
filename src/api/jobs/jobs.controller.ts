@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -23,6 +24,11 @@ export class JobsController {
   @Get()
   getAllAnnouncement() {
     return this.jobsService.getAllAnnouncement();
+  }
+
+  @Delete('/:jobId')
+  deleteAnnouncement(@Param('jobId', ParseIntPipe) jobId) {
+    return this.jobsService.deleteAnnouncement(jobId);
   }
 
   @Get('feat')

@@ -168,4 +168,12 @@ export class JobsService {
     ]);
     return result;
   }
+
+  async deleteAnnouncement(job_id) {
+    return await this.prisma.job.delete({
+      where: {
+        job_id,
+      },
+    });
+  }
 }
