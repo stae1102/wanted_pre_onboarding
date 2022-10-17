@@ -26,6 +26,11 @@ export class JobsController {
     return this.jobsService.getAllAnnouncement();
   }
 
+  @Get('announce/:jobId')
+  getSpecificAnnouncement(@Param('jobId', ParseIntPipe) jobId) {
+    return this.jobsService.getSpecificAnnouncement(jobId);
+  }
+
   @Delete('/:jobId')
   deleteAnnouncement(@Param('jobId', ParseIntPipe) jobId) {
     return this.jobsService.deleteAnnouncement(jobId);

@@ -106,11 +106,6 @@ export class JobsService {
               },
             },
             {
-              content: {
-                search: `${search}`,
-              },
-            },
-            {
               tech: {
                 search: `${search}`,
               },
@@ -175,5 +170,40 @@ export class JobsService {
         job_id,
       },
     });
+  }
+
+  async getSpecificAnnouncement(job_id) {
+    let result = await this.prisma.job.findUnique({
+      where: {
+        job_id,
+      },
+      select: {
+        job_id: true,
+        position: true,
+        compensation: true,
+        tech: true,
+        content: true,
+        Company: true,
+      },
+    });
+    const otherAnnouncment = await this.prisma.job.findMany({
+      where: {
+        Company: {
+          company_id: result.Company.company_id,
+        },
+      },
+      select: {
+        job_id: true,
+      },
+    });
+    result = this.transformData(result);
+    result['other_job_id'] = otherAnnouncment.map((data) => data.job_id);
+    return result;
+  }
+
+  transformData(data) {
+    Object.assign(data, data.Company);
+    delete data.Company;
+    return data;
   }
 }
