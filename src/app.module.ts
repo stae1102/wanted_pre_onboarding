@@ -10,9 +10,17 @@ import { CompaniesModule } from './api/companies/companies.module';
 import { ApiModule } from './api/api.module';
 import { RouterModule } from '@nestjs/core';
 import { UsersModule } from './api/users/users.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [PrismaModule, ApiModule, UsersModule],
+  imports: [
+    PrismaModule,
+    ApiModule,
+    UsersModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
