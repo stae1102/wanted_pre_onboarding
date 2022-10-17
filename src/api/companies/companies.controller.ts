@@ -28,7 +28,7 @@ export class CompaniesController {
   }
 
   @Get(':id')
-  async getCompanyById(@Param('id', ParseIntPipe) id) {
+  async getCompanyById(@Param('id', ParseIntPipe) id: number) {
     return this.companiesService.getCompanyById(id);
   }
 }
