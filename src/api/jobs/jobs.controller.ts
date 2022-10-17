@@ -16,14 +16,17 @@ import { JobsService } from './jobs.service';
 export class JobsController {
   constructor(private readonly jobsService: JobsService) {}
 
-  @Post()
-  createAnnouncement(@Body() body: CreateAnnouncementDto) {
-    return this.jobsService.createAnnouncement(body);
-  }
-
   @Get()
   getAllAnnouncement() {
     return this.jobsService.getAllAnnouncement();
+  }
+
+  @Post('/:companyId')
+  createAnnouncement(
+    @Param('companyId', ParseIntPipe) companyId: number,
+    @Body() body: CreateAnnouncementDto,
+  ) {
+    return this.jobsService.createAnnouncement(companyId, body);
   }
 
   @Get('announce/:jobId')

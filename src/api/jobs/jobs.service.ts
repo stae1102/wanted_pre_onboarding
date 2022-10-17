@@ -6,12 +6,15 @@ import { CreateAnnouncementDto } from './dto/create-announcement.dto';
 export class JobsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createAnnouncement(payload: CreateAnnouncementDto) {
-    const company = await this.findCompany(+payload.company_id);
+  async createAnnouncement(company_id: number, payload: CreateAnnouncementDto) {
+    const exist = await this.findCompany(company_id);
+    if (!exist) {
+      throw new NotFoundException('존재하지 않는 회사입니다.');
+    }
     const result = await this.prisma.$transaction([
       this.prisma.job.create({
         data: {
-          company_id: company.company_id,
+          company_id,
           position: payload.position,
           compensation: +payload.compensation,
           content: payload.content,
@@ -46,14 +49,13 @@ export class JobsService {
       },
     });
     announcements.map((data) => {
-      Object.assign(data, data.Company);
-      delete data.Company;
+      this.transformData(data);
     });
     return announcements;
   }
 
-  async searchAnnouncementByKeyword(search) {
-    let result;
+  async searchAnnouncementByKeyword(search: number | string) {
+    let result: Array<object>;
     if (typeof search === 'number') {
       result = await this.prisma.job.findMany({
         where: {
@@ -82,63 +84,62 @@ export class JobsService {
             {
               Company: {
                 name: {
-                  search: `${search}`,
+                  contains: search,
                 },
               },
             },
             {
               Company: {
                 nation: {
-                  search: `${search}`,
+                  contains: search,
                 },
               },
             },
             {
               Company: {
                 region: {
-                  search: `${search}`,
+                  contains: search,
                 },
               },
             },
             {
               position: {
-                search: `${search}`,
+                contains: search,
               },
             },
             {
               tech: {
-                search: `${search}`,
+                contains: search,
               },
             },
           ],
         },
       });
     }
-    if (!result) {
+    if (result.length < 1) {
       throw new NotFoundException('공고가 존재하지 않습니다.');
     }
     return result;
   }
 
-  async getAnnouncementById(id) {
-    const { company_id } = await this.findCompany(id);
-    return await this.prisma.job.findMany({
+  async getAnnouncementById(company_id) {
+    const result = await this.prisma.job.findMany({
       where: {
         company_id,
       },
     });
+    if (result.length < 1) {
+      throw new NotFoundException('해당 회사의 취업 공고가 없습니다.');
+    }
+    return result;
   }
 
   async findCompany(company_id) {
-    const company = await this.prisma.company.findFirst({
+    return await this.prisma.company.findFirst({
       where: {
         company_id,
       },
     });
-    if (!company) {
-      throw new NotFoundException('존재하지 않는 회사명입니다.');
-    }
-    return company;
   }
 
   async updateAnnouncement(job_id, payload) {
