@@ -48,9 +48,6 @@ export class JobsService {
         tech: true,
       },
     });
-    announcements.map((data) => {
-      this.transformData(data);
-    });
     return announcements;
   }
 
@@ -174,7 +171,7 @@ export class JobsService {
   }
 
   async getSpecificAnnouncement(job_id) {
-    let result = await this.prisma.job.findUnique({
+    const result = await this.prisma.job.findUnique({
       where: {
         job_id,
       },
@@ -187,6 +184,9 @@ export class JobsService {
         Company: true,
       },
     });
+    if (!result) {
+      throw new NotFoundException('공고가 존재하지 않습니다');
+    }
     const otherAnnouncment = await this.prisma.job.findMany({
       where: {
         Company: {
@@ -197,14 +197,7 @@ export class JobsService {
         job_id: true,
       },
     });
-    result = this.transformData(result);
     result['other_job_id'] = otherAnnouncment.map((data) => data.job_id);
     return result;
-  }
-
-  transformData(data) {
-    Object.assign(data, data.Company);
-    delete data.Company;
-    return data;
   }
 }
