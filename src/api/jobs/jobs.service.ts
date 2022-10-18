@@ -57,7 +57,7 @@ export class JobsService {
       result = await this.prisma.job.findMany({
         where: {
           compensation: {
-            lte: +search,
+            gte: +search,
           },
         },
         select: {
