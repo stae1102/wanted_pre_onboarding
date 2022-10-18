@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateAnnouncementDto } from './dto/create-announcement.dto';
 import { JobsService } from './jobs.service';
 
 describe('JobsService', () => {

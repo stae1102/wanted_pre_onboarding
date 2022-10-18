@@ -119,7 +119,7 @@ export class JobsService {
     return result;
   }
 
-  async getAnnouncementById(company_id) {
+  async getAnnouncementById(company_id: number) {
     const result = await this.prisma.job.findMany({
       where: {
         company_id,
@@ -131,7 +131,7 @@ export class JobsService {
     return result;
   }
 
-  async findCompany(company_id) {
+  async findCompany(company_id: number) {
     return await this.prisma.company.findFirst({
       where: {
         company_id,
@@ -139,7 +139,7 @@ export class JobsService {
     });
   }
 
-  async updateAnnouncement(job_id, payload) {
+  async updateAnnouncement(job_id: number, payload: CreateAnnouncementDto) {
     const result = await this.prisma.$transaction([
       this.prisma.job.update({
         where: {
@@ -162,7 +162,7 @@ export class JobsService {
     return result;
   }
 
-  async deleteAnnouncement(job_id) {
+  async deleteAnnouncement(job_id: number) {
     return await this.prisma.job.delete({
       where: {
         job_id,
@@ -170,7 +170,7 @@ export class JobsService {
     });
   }
 
-  async getSpecificAnnouncement(job_id) {
+  async getSpecificAnnouncement(job_id: number) {
     const result = await this.prisma.job.findUnique({
       where: {
         job_id,
